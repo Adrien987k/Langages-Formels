@@ -9,7 +9,8 @@
 %token <int> INT
 
 %token <string> BIN_MULT
-%token <string> BIN_PLUS (* Changer en PLUS et MINUS *)
+%token PLUS
+%token MINUS
 %token <string> BIN_CMP
 %token NOT
 %token AND
@@ -35,8 +36,9 @@
 %left NOT
 %left BIN_CMP
 
-%left BIN_PLUS
+%left PLUS MINUS
 %left BIN_MULT
+%left UMINUS
 
 
 /* Les non-terminaux par lesquels l'analyse peut commencer,
@@ -49,15 +51,16 @@
 
 terminated_expr:
   | cmd EOF { $1 }
-  | expr EOF { $1 }
+  /*| expr EOF { $1 } */
 
 expr:
   | INT                            { Int $1 }
   | VAR                            { Var $1 }
   | STRING                         { String $1 }
   | LPAR expr RPAR                 { $2 }
-  | expr BIN_PLUS expr             { App ($2,[$1;$3]) }
-  | BIN_PLUS("-") expr             { App ($1,[$2]) }
+  | expr PLUS expr                 { App ("+",[$1;$3]) }
+  | expr MINUS expr                { App ("-",[$1;$3]) }
+  | MINUS expr   %prec UMINUS      { App ("-",[$2]) }
   | expr BIN_MULT expr             { App ($2,[$1;$3]) }
   | expr BIN_CMP expr              { App ($2,[$1;$3]) }
   | expr AND expr                  { App ("and",[$1;$3]) }
