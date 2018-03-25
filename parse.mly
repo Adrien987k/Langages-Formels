@@ -51,7 +51,7 @@
 
 terminated_expr:
   | cmd EOF { $1 }
-  /*| expr EOF { $1 } */
+  | expr EOF { $1 }
 
 expr:
   | INT                            { Int $1 }

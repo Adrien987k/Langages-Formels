@@ -28,7 +28,6 @@ rule token = parse
   | "begin"            { BEGIN }
   | "end"              { END }
 
-  | varname as v       { VAR v }
   | integer as i       { INT (int_of_string i) }
   | '"'                { string (Buffer.create 17) lexbuf }
   | "(*"               { comlex 0 lexbuf }
@@ -49,6 +48,8 @@ rule token = parse
   | "or"               { OR }
   | "not"              { NOT }
 
+  | varname as v       { VAR v }
+
   | ","                { COMMA }
 
   | [' ' '\t' '\r']+   { token lexbuf }
@@ -59,7 +60,7 @@ rule token = parse
 
 and string buf = parse
   | '"'           { STRING (Scanf.unescaped(Buffer.contents buf)) }
- | [^ '"' '\\']+ | "\\\\" | "\\\""
+  | [^ '"' '\\']+ | "\\\\" | "\\\""
     { Buffer.add_string buf (Lexing.lexeme lexbuf);
       string buf lexbuf
     }
